@@ -18,17 +18,17 @@ Feature: Shopify Storefront Search Functionality
     When I search for "<searchTerm>"
     Then I should see a no results message
 
-  @Key:Search_Invalid_03
+  @Key:Search_Invalid_02
   @search @sad_path
-  Scenario: Search using emoji characters
+  Scenario: Search using numbers only
     Given I am on the Shopify storefront homepage
     When I search for "<searchTerm>"
     Then I should see a no results message
     And the search UI should handle the input gracefully
 
-  @Key:Search_Invalid_02
+  @Key:Search_Invalid_03
   @search @sad_path
-  Scenario: Search using numbers only
+  Scenario: Search using emoji characters
     Given I am on the Shopify storefront homepage
     When I search for "<searchTerm>"
     Then I should see a no results message
