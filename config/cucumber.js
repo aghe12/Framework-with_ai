@@ -1,0 +1,53 @@
+module.exports = {
+    default: {
+        tags: process.env.npm_config_TAGS || "",
+        formatOptions: {
+            snippetInterface: "async-await"
+        },
+        paths: [
+            "src/test/features/search.feature",
+            "src/test/features/auth.feature",
+            "src/test/features/pdp.feature",
+            "src/test/features/checkout.feature"
+        ],
+        publishQuiet: true,
+        dryRun: false,
+        require: [
+            "src/support/customTypes.ts",
+            "src/support/hooks.ts",
+            "src/test/steps/*.ts"
+        ],
+        requireModule: [
+            "ts-node/register"
+        ],
+        format: [
+            "progress-bar",
+            "html:test-results/cucumber-report.html",
+            "json:test-results/cucumber-report.json",
+            "rerun:@rerun.txt"
+        ],
+        parallel: 2
+    },
+    rerun: {
+        formatOptions: {
+            snippetInterface: "async-await"
+        },
+        publishQuiet: true,
+        dryRun: false,
+        require: [
+            "src/support/customTypes.ts",
+            "src/support/hooks.ts",
+            "src/test/steps/*.ts"
+        ],
+        requireModule: [
+            "ts-node/register"
+        ],
+        format: [
+            "progress-bar",
+            "html:test-results/cucumber-report.html",
+            "json:test-results/cucumber-report.json",
+            "rerun:@rerun.txt"
+        ],
+        parallel: 2
+    }
+}

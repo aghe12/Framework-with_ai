@@ -1,0 +1,13 @@
+Key|Env|searchTerm|expectedProducts|FirstName|LastName|Email|Password|expectedError|Address|City|Zip
+Search_01|STG|sandals|[Bronze sandals,Brown sandals]||||||||
+Search_Invalid_01|STG|watch|||||||||
+Search_Invalid_02|STG|123|||||||||
+Search_Invalid_03|STG|😊😊😊|||||||||
+Search_Empty_01|STG| |||||||||
+Signup_01|STG|||John|Doe|john.doe12345@test.com|SecurePass123!||||
+Signup_Blank_01|STG|||||||Email can't be blank.|||
+Signup_Blank_Names_01|STG|||||test@test.com|SecurePass123!|First name can't be blank.|||
+Signup_Existing_01|STG|||Test|User|test@test.com|SecurePass123!|This email address is already associated with an account.|||
+Signup_ShortPass_01|STG|||Test|User|test@test.com|123|Password is too short (minimum is 5 characters)|||
+Checkout_01|STG|||John|Doe|john.checkout@example.com|||123 Automation St|Tech City|10001
+Checkout_Blank_LastName_01|STG|||John||john.checkout@example.com||Enter a last name|123 Automation St|Tech City|10001
