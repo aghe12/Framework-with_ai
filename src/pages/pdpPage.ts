@@ -43,8 +43,33 @@ export default class PdpPage {
         const imagesCount = await this.wrapper.count(imageLocator);
         expect(imagesCount).toBeGreaterThan(0);
 
-        // Verify Variant Selectors or Add to Cart form
+    // Verify Variant Selectors or Add to Cart form
         const productFormLocator = 'form[action*="/cart/add"]';
         await this.assert.assertElementVisible(productFormLocator);
+    }
+
+    async clickSoldOutProduct() {
+        const soldOutProductLocator = 'a:has(.sold-out)';
+        await this.assert.assertElementVisible(soldOutProductLocator);
+        await this.wrapper.click(soldOutProductLocator);
+        await this.page.waitForLoadState('domcontentloaded');
+    }
+
+    async verifyProductIsSoldOut() {
+        // Wait a moment for page transition
+        await this.page.waitForLoadState('domcontentloaded');
+
+        // Locate the Add to Cart button (often changes to a disabled 'Sold Out' button)
+        const addToCartBtn = this.page.locator('form[action*="/cart/add"] button[type="submit"], form[action*="/cart/add"] input[type="submit"], #add, .add-to-cart, [value*="Sold Out" i], button:has-text("Sold Out")').first();
+        await expect(addToCartBtn).toBeVisible({ timeout: 10000 });
+        
+        // Assert it is disabled
+        await expect(addToCartBtn).toBeDisabled();
+        
+        // Assert text says Sold out (case insensitive check). It could be innerText or the value attribute for input tags.
+        const textContent = await addToCartBtn.textContent() || '';
+        const valueAttr = await addToCartBtn.getAttribute('value') || '';
+        const combinedText = textContent + ' ' + valueAttr;
+        expect(combinedText.toLowerCase()).toContain('sold out');
     }
 }

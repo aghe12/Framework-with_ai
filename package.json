@@ -13,7 +13,8 @@
     "test:regression": "cross-env ENV=STG npx ts-node src/helper/report/init.ts && cross-env ENV=STG cucumber-js --config=config/cucumber.js --tags @regression && cross-env ENV=STG npx ts-node src/helper/report/report.ts",
     "test:staging": "cross-env ENV=STG npx ts-node src/helper/report/init.ts && cross-env ENV=STG cucumber-js --config=config/cucumber.js && cross-env ENV=STG npx ts-node src/helper/report/report.ts",
     "test:sanity": "cross-env ENV=PRD npx ts-node src/helper/report/init.ts && cross-env ENV=PRD cucumber-js --config=config/cucumber.js --tags @sanity && cross-env ENV=PRD npx ts-node src/helper/report/report.ts",
-    "test:smoke1": "cross-env ENV=STG npx ts-node src/helper/report/init.ts && cross-env ENV=STG cucumber-js --config=config/cucumber.js --tags @smoke1 && cross-env ENV=STG npx ts-node src/helper/report/report.ts"
+    "test:smoke1": "cross-env ENV=STG npx ts-node src/helper/report/init.ts && cross-env ENV=STG cucumber-js --config=config/cucumber.js --tags @smoke1 && cross-env ENV=STG npx ts-node src/helper/report/report.ts",
+    "test:cart": "cross-env ENV=STG npx ts-node src/helper/report/init.ts && cross-env ENV=STG cucumber-js --config=config/cucumber.js --tags @cart && cross-env ENV=STG npx ts-node src/helper/report/report.ts"
   },
   "keywords": [
     "cucumber",

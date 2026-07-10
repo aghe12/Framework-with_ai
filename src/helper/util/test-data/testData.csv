@@ -11,3 +11,5 @@ Signup_Existing_01|STG|||Test|User|test@test.com|SecurePass123!|This email addre
 Signup_ShortPass_01|STG|||Test|User|test@test.com|123|Password is too short (minimum is 5 characters)|||
 Checkout_01|STG|||John|Doe|john.checkout@example.com|||123 Automation St|Tech City|10001
 Checkout_Blank_LastName_01|STG|||John||john.checkout@example.com||Enter a last name|123 Automation St|Tech City|10001
+Checkout_Blank_ZipCode_01|STG|||John|Doe|john.checkout@example.com||Enter a ZIP / postal code|123 Automation St|Tech City|
+PDP_SoldOut_01|STG||||||||||

@@ -1,5 +1,6 @@
 import { Page } from "@playwright/test";
 import { Logger } from "winston";
+import CartPage from "../pages/cartPage";
 
 export const fixture = {
     page: undefined as Page,
@@ -7,5 +8,8 @@ export const fixture = {
     testData: {} as Record<string, any>,   // scenario-level test data
     env: "" as string,                     // ✅ environment (staging, prod, etc.)
     subStepLogger: undefined as any,
-    pages: {} as Record<string, any>,
+    pages: {} as {
+        cartPage: CartPage;
+        [key: string]: any;
+    },
 };

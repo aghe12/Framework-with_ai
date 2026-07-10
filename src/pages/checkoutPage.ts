@@ -79,7 +79,7 @@ export default class CheckoutPage {
         await this.wrapper.click(payButtonLocator);
 
         // Assert the specific error message text is visible
-        const errorMessageLocator = `.field__message:has-text("${expectedMessage}"), [id^="error-for"]:has-text("${expectedMessage}"), .notice--error:has-text("${expectedMessage}"), text="${expectedMessage}"`;
+        const errorMessageLocator = `.field__message:has-text("${expectedMessage}"), [id^="error-for"]:has-text("${expectedMessage}"), .notice--error:has-text("${expectedMessage}")`;
         await this.assert.assertElementVisible(errorMessageLocator);
     }
 

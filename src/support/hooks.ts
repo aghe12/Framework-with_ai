@@ -134,11 +134,13 @@ Before(async function ({ pickle }) {
     const authPage = require("../pages/authPage").default;
     const pdpPage = require("../pages/pdpPage").default;
     const checkoutPage = require("../pages/checkoutPage").default;
+    const cartPage = require("../pages/cartPage").default;
     fixture.pages = {
         searchPage: new SearchPage(fixture.page, fixture.subStepLogger),
         authPage: new authPage(fixture.page),
         pdpPage: new pdpPage(fixture.page),
         checkoutPage: new checkoutPage(fixture.page),
+        cartPage: new cartPage(fixture.page),
     };
     fixture.logger?.info('Page objects initialized for scenario.');
 });

@@ -5,10 +5,7 @@ module.exports = {
             snippetInterface: "async-await"
         },
         paths: [
-            "src/test/features/search.feature",
-            "src/test/features/auth.feature",
-            "src/test/features/pdp.feature",
-            "src/test/features/checkout.feature"
+            "src/test/features/**/*.feature"
         ],
         publishQuiet: true,
         dryRun: false,
