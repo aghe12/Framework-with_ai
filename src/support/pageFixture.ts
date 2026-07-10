@@ -1,6 +1,7 @@
 import { Page } from "@playwright/test";
 import { Logger } from "winston";
 import CartPage from "../pages/cartPage";
+import HomePage from "../pages/homePage";
 
 export const fixture = {
     page: undefined as Page,
@@ -10,6 +11,7 @@ export const fixture = {
     subStepLogger: undefined as any,
     pages: {} as {
         cartPage: CartPage;
+        homePage: HomePage;
         [key: string]: any;
     },
 };
