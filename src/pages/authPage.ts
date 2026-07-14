@@ -11,6 +11,17 @@ export default class AuthPage {
         this.assert = new Assert(page);
     }
 
+    private Elements = {
+        firstNameInput: 'input[name="customer[first_name]"]',
+        lastNameInput: 'input[name="customer[last_name]"]',
+        emailInput: 'input[name="customer[email]"]',
+        passwordInput: 'input[name="customer[password]"]',
+        registerButton: 'input[value="Create"]',
+        loginButton: 'form[action*="/account/login"] button',
+        captcha: '.g-recaptcha',
+        errorLocator: '.errors'
+    };
+
     async navigateToLogin() {
         await this.wrapper.goto(`${process.env.BASEURL}/account/login`);
     }
@@ -20,18 +31,18 @@ export default class AuthPage {
     }
 
     async fillRegistrationDetails(firstName: string, lastName: string, email: string, password: string) {
-        await this.wrapper.type('input[name="customer[first_name]"]', firstName);
-        await this.wrapper.type('input[name="customer[last_name]"]', lastName);
-        await this.wrapper.type('input[name="customer[email]"]', email);
-        await this.wrapper.type('input[name="customer[password]"]', password);
-        await this.wrapper.click('form[action*="/account"] button, form[action*="/account"] input[type="submit"], input[value="Create"]');
+        await this.wrapper.type(this.Elements.firstNameInput, firstName);
+        await this.wrapper.type(this.Elements.lastNameInput, lastName);
+        await this.wrapper.type(this.Elements.emailInput, email);
+        await this.wrapper.type(this.Elements.passwordInput, password);
+        await this.wrapper.click(this.Elements.registerButton);
         await this.page.waitForLoadState('domcontentloaded');
     }
 
     async fillLoginDetails(email: string, password: string) {
-        await this.wrapper.type('input[name="customer[email]"]', email);
-        await this.wrapper.type('input[name="customer[password]"]', password);
-        await this.wrapper.click('form[action*="/account/login"] button, form[action*="/account/login"] input[type="submit"], input[value="Sign In"]');
+        await this.wrapper.type(this.Elements.emailInput, email);
+        await this.wrapper.type(this.Elements.passwordInput, password);
+        await this.wrapper.click(this.Elements.loginButton);
         await this.page.waitForLoadState('domcontentloaded');
     }
 
@@ -44,7 +55,7 @@ export default class AuthPage {
             await this.assert.assertURLContains('/account');
         } catch (error) {
             // If CAPTCHA hits, let's gracefully fail or log it
-            const captcha = this.page.locator('.g-recaptcha, iframe[src*="recaptcha"], .shopify-challenge__container, form[action*="/challenge"], #challenge-form');
+            const captcha = this.page.locator(this.Elements.captcha);
             if (await captcha.count() > 0) {
                 console.log("⚠️ CAPTCHA detected. Cannot verify automated login success without solving.");
                 return;
@@ -54,13 +65,13 @@ export default class AuthPage {
     }
 
     async verifyErrorMessage(expectedMessage: string) {
-        const errorLocator = '.errors, .form-message--error';
+        const errorLocator = this.Elements.errorLocator;
         try {
             await this.assert.assertElementVisible(errorLocator);
             const errorText = await this.page.locator(errorLocator).textContent();
             expect(errorText).toContain(expectedMessage);
         } catch (error) {
-            const captcha = this.page.locator('.g-recaptcha, iframe[src*="recaptcha"], .shopify-challenge__container, form[action*="/challenge"], #challenge-form');
+            const captcha = this.page.locator(this.Elements.captcha);
             if (await captcha.count() > 0) {
                 console.log("⚠️ CAPTCHA detected on sad path. Cannot verify automated error message without solving.");
                 return;

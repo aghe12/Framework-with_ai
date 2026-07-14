@@ -1,10 +1,10 @@
-@smoke @social
+@social
 Feature: Social Media Links
   As a customer
   I want to be able to access the store's social media pages
   So that I can follow them on various platforms
 
-  @happy_path
+  @happy_path @smoke
   Scenario Outline: Verify social media link for <Platform>
     Given I navigate to the Home page
     Then I should see the "<Platform>" social link pointing to "<ExpectedUrl>"

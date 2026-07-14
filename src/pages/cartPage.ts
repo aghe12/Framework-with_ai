@@ -11,8 +11,17 @@ export default class CartPage {
         this.assert = new Assert(page);
     }
 
+    private Elements = {
+        addBtnLocator: 'form[action*="/cart/add"] button[type="submit"]',
+        qtyInput: 'input[name="updates[]"]',
+        totalPrice: '.cart-total',
+        removeLink: 'a:has-text("Remove")',
+        emptyMsg: 'text="Your cart is currently empty"',
+        cartItems: '.cart-item'
+    };
+
     async addProductToCart() {
-        const addBtnLocator = 'form[action*="/cart/add"] button[type="submit"], form[action*="/cart/add"] input[type="submit"], #add';
+        const addBtnLocator = this.Elements.addBtnLocator;
         await this.assert.assertElementVisible(addBtnLocator);
         const responsePromise = this.page.waitForResponse(response => response.url().includes('/cart/add') && response.status() === 200, { timeout: 10000 }).catch(() => null);
         await this.wrapper.click(addBtnLocator);
@@ -26,7 +35,7 @@ export default class CartPage {
     }
 
     async updateQuantity(quantity: string) {
-        const qtyInput = this.page.locator('input[name="updates[]"]').first();
+        const qtyInput = this.page.locator(this.Elements.qtyInput).first();
         await expect(qtyInput).toBeVisible();
         await qtyInput.fill(quantity);
         await qtyInput.press('Enter');
@@ -35,28 +44,28 @@ export default class CartPage {
     }
 
     async verifyQuantityUpdated(quantity: string) {
-        const qtyInput = this.page.locator('input[name="updates[]"]').first();
+        const qtyInput = this.page.locator(this.Elements.qtyInput).first();
         await expect(qtyInput).toHaveValue(quantity);
-        const totalPrice = this.page.locator('.total.desktop, .cart-total, [data-cart-total]');
+        const totalPrice = this.page.locator(this.Elements.totalPrice);
         if (await totalPrice.count() > 0) {
             await expect(totalPrice.first()).toBeVisible();
         }
     }
 
     async removeFirstItem() {
-        const removeLink = this.page.locator('a[href*="/cart/change?line="], .removeLine, a:has-text("Remove")').first();
+        const removeLink = this.page.locator(this.Elements.removeLink).first();
         await expect(removeLink).toBeVisible();
         await removeLink.click();
         await this.page.waitForLoadState('domcontentloaded');
     }
 
     async verifyCartEmpty() {
-        const emptyMsg = this.page.locator('text="Your cart is currently empty", text="cart is empty", .cart-empty');
+        const emptyMsg = this.page.locator(this.Elements.emptyMsg);
         await expect(emptyMsg.first()).toBeVisible({ timeout: 10000 });
     }
 
     async verifyItemInCart() {
-        const cartItems = this.page.locator('input[name="updates[]"], .cart-item');
+        const cartItems = this.page.locator(this.Elements.cartItems);
         expect(await cartItems.count()).toBeGreaterThan(0);
     }
 }

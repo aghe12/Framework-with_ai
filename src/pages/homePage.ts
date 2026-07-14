@@ -11,6 +11,10 @@ export default class HomePage {
         this.assert = new Assert(page);
     }
 
+    private Elements = {
+        socialLink: (platform: string) => `#social a.${platform.toLowerCase()}`
+    };
+
     async navigateToHome() {
         await this.wrapper.goto(`${process.env.BASEURL}/`);
         await this.page.waitForLoadState('domcontentloaded');
@@ -18,7 +22,7 @@ export default class HomePage {
 
     async verifySocialLink(platform: string, expectedUrl: string) {
         // The HTML structure has class names matching the platforms like 'facebook', 'twitter'
-        const linkLocator = this.page.locator(`#social a.${platform.toLowerCase()}`);
+        const linkLocator = this.page.locator(this.Elements.socialLink(platform));
         await expect(linkLocator).toBeVisible();
         
         const actualHref = await linkLocator.getAttribute('href');

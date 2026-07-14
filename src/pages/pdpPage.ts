@@ -11,12 +11,22 @@ export default class PdpPage {
     this.assert = new Assert(page);
   }
 
+  private Elements = {
+    productLink: 'a[href*="/products/"]',
+    title: 'h1',
+    price: '.price',
+    image: 'img',
+    productForm: 'form[action*="/cart/add"]',
+    soldOutProduct: 'a:has(.sold-out)',
+    addToCartBtn: 'button:has-text("Sold Out")'
+  };
+
   async navigateToCatalog() {
     await this.wrapper.goto(`${process.env.BASEURL}/collections/all`);
   }
 
   async clickFirstProduct() {
-    const productLinkLocator = 'a[href*="/products/"]';
+    const productLinkLocator = this.Elements.productLink;
     await this.assert.assertElementVisible(productLinkLocator);
     await this.wrapper.click(productLinkLocator);
     await this.page.waitForLoadState("domcontentloaded");
@@ -28,7 +38,7 @@ export default class PdpPage {
 
     // Verify Title is present by finding an H1 that actually has text
     const titleLocator = this.page
-      .locator("h1")
+      .locator(this.Elements.title)
       .filter({ hasText: /[a-zA-Z0-9]/ });
     await expect(titleLocator.first()).toBeVisible({ timeout: 10000 });
     const titleText = await titleLocator.first().innerText();
@@ -36,26 +46,24 @@ export default class PdpPage {
 
     // Verify Price is present
     const priceLocator = this.page
-      .locator(
-        '.price, .money, .price-item, .product__price, .product-single__price, .product-price, #product-price, [itemprop="price"]',
-      )
+      .locator(this.Elements.price)
       .filter({ hasText: /[$£€\d]/ });
     await expect(priceLocator.first()).toBeVisible({ timeout: 10000 });
     const priceText = await priceLocator.first().innerText();
     expect(priceText).toMatch(/[$£€\d]/);
 
     // Verify Image is present
-    const imageLocator = "img";
+    const imageLocator = this.Elements.image;
     const imagesCount = await this.wrapper.count(imageLocator);
     expect(imagesCount).toBeGreaterThan(0);
 
     // Verify Variant Selectors or Add to Cart form
-    const productFormLocator = 'form[action*="/cart/add"]';
+    const productFormLocator = this.Elements.productForm;
     await this.assert.assertElementVisible(productFormLocator);
   }
 
   async clickSoldOutProduct() {
-    const soldOutProductLocator = "a:has(.sold-out)";
+    const soldOutProductLocator = this.Elements.soldOutProduct;
     await this.assert.assertElementVisible(soldOutProductLocator);
     await this.wrapper.click(soldOutProductLocator);
     await this.page.waitForLoadState("domcontentloaded");
@@ -67,9 +75,7 @@ export default class PdpPage {
 
     // Locate the Add to Cart button (often changes to a disabled 'Sold Out' button)
     const addToCartBtn = this.page
-      .locator(
-        'form[action*="/cart/add"] button[type="submit"], form[action*="/cart/add"] input[type="submit"], #add, .add-to-cart, [value*="Sold Out" i], button:has-text("Sold Out")',
-      )
+      .locator(this.Elements.addToCartBtn)
       .first();
     await expect(addToCartBtn).toBeVisible({ timeout: 10000 });
 

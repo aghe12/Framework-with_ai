@@ -11,61 +11,61 @@ export default class CheckoutPage {
         this.assert = new Assert(page);
     }
 
+    private Elements = {
+        addBtnLocator: 'form[action*="/cart/add"] button[type="submit"]',
+        checkoutBtnLocator: 'button[name="checkout"]',
+        emailInput: '#checkout_email',
+        firstNameInput: '#checkout_shipping_address_first_name',
+        lastNameInput: '#checkout_shipping_address_last_name',
+        addressInput: '#checkout_shipping_address_address1',
+        cityInput: '#checkout_shipping_address_city',
+        zipInput: '#checkout_shipping_address_zip',
+        payNowBtn: '#checkout-pay-button',
+        summaryTable: '.order-summary__sections',
+        errorLocator: '.field__message'
+    };
+
     async addProductToCartAndCheckout() {
-        // Assume we are on a PDP
-        const addBtnLocator = 'form[action*="/cart/add"] button[type="submit"], form[action*="/cart/add"] input[type="submit"], #add';
+        const addBtnLocator = this.Elements.addBtnLocator;
         await this.assert.assertElementVisible(addBtnLocator);
         
-        // Wait for the add to cart network request to complete before navigating away
         const responsePromise = this.page.waitForResponse(response => response.url().includes('/cart/add') && response.status() === 200, { timeout: 10000 }).catch(() => null);
         await this.wrapper.click(addBtnLocator);
         await responsePromise;
         
-        await this.page.waitForTimeout(1000); // Small buffer for cart state to update
+        await this.page.waitForTimeout(1000);
 
-        // Navigate to checkout explicitly if not redirected
         await this.wrapper.goto(`${process.env.BASEURL}/cart`);
         
-        const checkoutBtnLocator = '[name="checkout"], #checkout, .checkout-btn, a[href^="/checkout"], button:has-text("Check out"), button:has-text("Checkout"), input[value="Check out"], input[value="Checkout"]';
+        const checkoutBtnLocator = this.Elements.checkoutBtnLocator;
         await this.assert.assertElementVisible(checkoutBtnLocator);
         await this.wrapper.click(checkoutBtnLocator);
     }
 
     async fillShippingDetails(email: string, firstName: string, lastName: string, address: string, city: string, zip: string) {
-        // Wait for checkout to load (can be slow)
         await this.page.waitForLoadState('domcontentloaded');
         
-        // Check if we hit the unsupported browser block
         const errorContainer = this.page.locator('.error-container');
         if (await errorContainer.count() > 0) {
-             console.log("⚠️ Shopify blocked checkout (Unsupported Browser / Bot detection). Skipping form fill.");
+             console.log("⚠️ Shopify blocked checkout. Skipping form fill.");
              return;
         }
 
-        const emailLocator = '#checkout_email, [name="email"], #email';
         try {
-            await this.page.waitForSelector(emailLocator, { timeout: 5000 });
-            await this.wrapper.type(emailLocator, email);
+            await this.page.waitForSelector(this.Elements.emailInput, { timeout: 5000 });
+            await this.wrapper.type(this.Elements.emailInput, email);
         } catch (e) {
-            console.log("⚠️ Email field not found on checkout (may be pre-filled). Skipping...");
+            console.log("⚠️ Email field not found.");
         }
 
-        const firstNameLocator = '#checkout_shipping_address_first_name, [name="firstName"]:not([aria-hidden="true"])';
-        if (await this.wrapper.isVisible(firstNameLocator)) {
-            await this.wrapper.type(firstNameLocator, firstName);
+        if (await this.wrapper.isVisible(this.Elements.firstNameInput)) {
+            await this.wrapper.type(this.Elements.firstNameInput, firstName);
         }
 
-        const lastNameLocator = '#checkout_shipping_address_last_name, [name="lastName"]:not([aria-hidden="true"])';
-        await this.wrapper.type(lastNameLocator, lastName);
-
-        const addressLocator = '#checkout_shipping_address_address1, [name="address1"]:not([aria-hidden="true"])';
-        await this.wrapper.type(addressLocator, address);
-
-        const cityLocator = '#checkout_shipping_address_city, [name="city"]:not([aria-hidden="true"])';
-        await this.wrapper.type(cityLocator, city);
-
-        const zipLocator = '#checkout_shipping_address_zip, [name="postalCode"]:not([aria-hidden="true"])';
-        await this.wrapper.type(zipLocator, zip);
+        await this.wrapper.type(this.Elements.lastNameInput, lastName);
+        await this.wrapper.type(this.Elements.addressInput, address);
+        await this.wrapper.type(this.Elements.cityInput, city);
+        await this.wrapper.type(this.Elements.zipInput, zip);
     }
 
     async verifyErrorMessage(expectedMessage: string) {
@@ -74,9 +74,6 @@ export default class CheckoutPage {
              return;
         }
 
-        // On the new Shopify checkout, we need to click the "Pay now" button to trigger validation messages
-        const payButtonLocator = '#checkout-pay-button, button:has-text("Pay now")';
-        await this.wrapper.click(payButtonLocator);
 
         // Assert the specific error message text is visible
         const errorMessageLocator = `.field__message:has-text("${expectedMessage}"), [id^="error-for"]:has-text("${expectedMessage}"), .notice--error:has-text("${expectedMessage}")`;

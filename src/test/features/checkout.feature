@@ -1,10 +1,10 @@
-@smoke @checkout
+@checkout
 Feature: Checkout Flow Functionality
   As a customer
   I want to be able to proceed to checkout and enter shipping details
   So that I can purchase products
 
-  @Key:Checkout_01
+  @Key:Checkout_01 @smoke
   @happy_path
   Scenario: Successfully navigate to checkout and enter shipping details
     Given I am on the Catalog page
@@ -14,7 +14,7 @@ Feature: Checkout Flow Functionality
     Then the checkout page should load successfully with the correct products
 
 
-  @Key:Checkout_Blank_ZipCode_01
+  @Key:Checkout_Blank_ZipCode_01 @smoke
   @sad_path
   Scenario: Attempt to checkout with only empty zip code
     Given I am on the Catalog page

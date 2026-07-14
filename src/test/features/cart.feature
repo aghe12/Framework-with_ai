@@ -1,10 +1,10 @@
-@smoke @cart
+@cart
 Feature: Cart Management Functionality
   As a customer
   I want to be able to manage items in my cart
   So that I can easily prepare for checkout
 
-  @happy_path
+  @happy_path @smoke
   Scenario: Update item quantity in the cart
     Given I am on the Catalog page
     When I click on the first product in the grid
@@ -13,7 +13,7 @@ Feature: Cart Management Functionality
     And I update the quantity to "3"
     Then the cart should update the quantity to "3"
 
-  @happy_path
+  @happy_path @smoke
   Scenario: Remove item from the cart
     Given I am on the Catalog page
     When I click on the first product in the grid
@@ -22,7 +22,7 @@ Feature: Cart Management Functionality
     And I remove the item from the cart
     Then I should see the cart is empty message
 
-  @happy_path
+  @happy_path @smoke
   Scenario: Cart persistence across sessions
     Given I am on the Catalog page
     When I click on the first product in the grid
