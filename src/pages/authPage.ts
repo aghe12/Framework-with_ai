@@ -22,6 +22,15 @@ export default class AuthPage {
         errorLocator: '.errors'
     };
 
+    private async handleCaptcha(error: any, message: string) {
+        const captcha = this.page.locator(this.Elements.captcha);
+        if (await captcha.count() > 0) {
+            console.log(`⚠️ CAPTCHA detected. ${message}`);
+            return;
+        }
+        throw error;
+    }
+
     async navigateToLogin() {
         await this.wrapper.goto(`${process.env.BASEURL}/account/login`);
     }
@@ -54,29 +63,17 @@ export default class AuthPage {
             await this.page.waitForURL(/.*\/account.*/, { timeout: 10000 });
             await this.assert.assertURLContains('/account');
         } catch (error) {
-            // If CAPTCHA hits, let's gracefully fail or log it
-            const captcha = this.page.locator(this.Elements.captcha);
-            if (await captcha.count() > 0) {
-                console.log("⚠️ CAPTCHA detected. Cannot verify automated login success without solving.");
-                return;
-            }
-            throw error;
+            await this.handleCaptcha(error, "Cannot verify automated login success without solving.");
         }
     }
 
     async verifyErrorMessage(expectedMessage: string) {
-        const errorLocator = this.Elements.errorLocator;
         try {
-            await this.assert.assertElementVisible(errorLocator);
-            const errorText = await this.page.locator(errorLocator).textContent();
+            await this.assert.assertElementVisible(this.Elements.errorLocator);
+            const errorText = await this.page.locator(this.Elements.errorLocator).textContent();
             expect(errorText).toContain(expectedMessage);
         } catch (error) {
-            const captcha = this.page.locator(this.Elements.captcha);
-            if (await captcha.count() > 0) {
-                console.log("⚠️ CAPTCHA detected on sad path. Cannot verify automated error message without solving.");
-                return;
-            }
-            throw error;
+            await this.handleCaptcha(error, "Cannot verify automated error message without solving.");
         }
     }
 }

@@ -22,34 +22,38 @@ export default class CheckoutPage {
         zipInput: '#checkout_shipping_address_zip',
         payNowBtn: '#checkout-pay-button',
         summaryTable: '.order-summary__sections',
-        errorLocator: '.field__message'
+        errorLocator: '.field__message',
+        errorContainer: '.error-container',
+        errorMessage: (msg: string) => `.field__message:has-text("${msg}")`
     };
 
+    private async isBlockedByShopify(): Promise<boolean> {
+        const errorContainer = this.page.locator(this.Elements.errorContainer);
+        if (await errorContainer.count() > 0) {
+             console.log("⚠️ Shopify blocked checkout.");
+             return true;
+        }
+        return false;
+    }
+
     async addProductToCartAndCheckout() {
-        const addBtnLocator = this.Elements.addBtnLocator;
-        await this.assert.assertElementVisible(addBtnLocator);
+        await this.assert.assertElementVisible(this.Elements.addBtnLocator);
         
         const responsePromise = this.page.waitForResponse(response => response.url().includes('/cart/add') && response.status() === 200, { timeout: 10000 }).catch(() => null);
-        await this.wrapper.click(addBtnLocator);
+        await this.wrapper.click(this.Elements.addBtnLocator);
         await responsePromise;
         
         await this.page.waitForTimeout(1000);
 
         await this.wrapper.goto(`${process.env.BASEURL}/cart`);
         
-        const checkoutBtnLocator = this.Elements.checkoutBtnLocator;
-        await this.assert.assertElementVisible(checkoutBtnLocator);
-        await this.wrapper.click(checkoutBtnLocator);
+        await this.assert.assertElementVisible(this.Elements.checkoutBtnLocator);
+        await this.wrapper.click(this.Elements.checkoutBtnLocator);
     }
 
     async fillShippingDetails(email: string, firstName: string, lastName: string, address: string, city: string, zip: string) {
         await this.page.waitForLoadState('domcontentloaded');
-        
-        const errorContainer = this.page.locator('.error-container');
-        if (await errorContainer.count() > 0) {
-             console.log("⚠️ Shopify blocked checkout. Skipping form fill.");
-             return;
-        }
+        if (await this.isBlockedByShopify()) return;
 
         try {
             await this.page.waitForSelector(this.Elements.emailInput, { timeout: 5000 });
@@ -69,25 +73,16 @@ export default class CheckoutPage {
     }
 
     async verifyErrorMessage(expectedMessage: string) {
-        const errorContainer = this.page.locator('.error-container');
-        if (await errorContainer.count() > 0) {
-             return;
-        }
-
+        if (await this.isBlockedByShopify()) return;
 
         // Assert the specific error message text is visible
-        const errorMessageLocator = `.field__message:has-text("${expectedMessage}"), [id^="error-for"]:has-text("${expectedMessage}"), .notice--error:has-text("${expectedMessage}")`;
-        await this.assert.assertElementVisible(errorMessageLocator);
+        await this.assert.assertElementVisible(this.Elements.errorMessage(expectedMessage));
     }
 
     async verifyCheckoutSummary() {
-        const errorContainer = this.page.locator('.error-container');
-        if (await errorContainer.count() > 0) {
-             return;
-        }
+        if (await this.isBlockedByShopify()) return;
 
         // Verify the checkout payment section or pay button is visible
-        const payButtonLocator = '#checkout-pay-button, .step__sections, #checkout-main';
-        await this.assert.assertElementVisible(payButtonLocator);
+        await this.assert.assertElementVisible(this.Elements.payNowBtn);
     }
 }

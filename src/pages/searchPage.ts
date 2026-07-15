@@ -24,46 +24,38 @@ export default class SearchPage {
     }
 
     async searchFor(searchQuery: string) {
-        const searchInputLocator = this.Elements.searchInput;
-        const searchButtonLocator = this.Elements.searchButton;
 
-        const searchButtonVisible = await this.wrapper.isVisible(searchButtonLocator);
-        const searchInputVisible = await this.wrapper.isVisible(searchInputLocator);
+        const searchButtonVisible = await this.wrapper.isVisible(this.Elements.searchButton);
+        const searchInputVisible = await this.wrapper.isVisible(this.Elements.searchInput);
 
         if (searchButtonVisible && !searchInputVisible) {
-            await this.wrapper.click(searchButtonLocator);
+            await this.wrapper.click(this.Elements.searchButton);
         }
 
-        await this.wrapper.type(searchInputLocator, searchQuery);
-        await this.wrapper.press(searchInputLocator, 'Enter');
+        await this.wrapper.type(this.Elements.searchInput, searchQuery);
+        await this.wrapper.press(this.Elements.searchInput, 'Enter');
         await this.page.waitForLoadState('domcontentloaded');
     }
 
     async verifyProductResults() {
-        const productItemsLocator = this.Elements.productItems;
-        await this.assert.assertElementVisible(productItemsLocator);
-        await this.assert.assertElementCountGreaterThan(productItemsLocator, 0);
+        await this.assert.assertElementVisible(this.Elements.productItems);
+        await this.assert.assertElementCountGreaterThan(this.Elements.productItems, 0);
     }
 
     async verifyNoResultsMessage() {
-        const noResultsMessageLocator = this.Elements.noResultsMessage;
-        await this.assert.assertElementVisible(noResultsMessageLocator);
+        await this.assert.assertElementVisible(this.Elements.noResultsMessage);
     }
 
     async verifyUIHandlesInputGracefully() {
-        const errorTitleLocator = this.Elements.errorTitle;
-        await this.assert.assertElementCount(errorTitleLocator, 0);
+        await this.assert.assertElementCount(this.Elements.errorTitle, 0);
     }
 
     async verifySearchDoesNotBreak() {
-        const errorTitleLocator = this.Elements.errorTitle;
-        await this.assert.assertElementCount(errorTitleLocator, 0);
+        await this.assert.assertElementCount(this.Elements.errorTitle, 0);
         
-        const productItemsLocator = this.Elements.productItems;
-        const noResultsMessageLocator = this.Elements.noResultsMessage;
         
-        const isItemsVisible = await this.page.waitForSelector(productItemsLocator, { state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
-        const isNoResultsVisible = await this.page.waitForSelector(noResultsMessageLocator, { state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+        const isItemsVisible = await this.page.waitForSelector(this.Elements.productItems, { state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+        const isNoResultsVisible = await this.page.waitForSelector(this.Elements.noResultsMessage, { state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
         
         expect(isItemsVisible || isNoResultsVisible).toBe(true);
     }

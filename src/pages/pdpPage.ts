@@ -26,9 +26,8 @@ export default class PdpPage {
   }
 
   async clickFirstProduct() {
-    const productLinkLocator = this.Elements.productLink;
-    await this.assert.assertElementVisible(productLinkLocator);
-    await this.wrapper.click(productLinkLocator);
+    await this.assert.assertElementVisible(this.Elements.productLink);
+    await this.wrapper.click(this.Elements.productLink);
     await this.page.waitForLoadState("domcontentloaded");
   }
 
@@ -53,19 +52,16 @@ export default class PdpPage {
     expect(priceText).toMatch(/[$£€\d]/);
 
     // Verify Image is present
-    const imageLocator = this.Elements.image;
-    const imagesCount = await this.wrapper.count(imageLocator);
+    const imagesCount = await this.wrapper.count(this.Elements.image);
     expect(imagesCount).toBeGreaterThan(0);
 
     // Verify Variant Selectors or Add to Cart form
-    const productFormLocator = this.Elements.productForm;
-    await this.assert.assertElementVisible(productFormLocator);
+    await this.assert.assertElementVisible(this.Elements.productForm);
   }
 
   async clickSoldOutProduct() {
-    const soldOutProductLocator = this.Elements.soldOutProduct;
-    await this.assert.assertElementVisible(soldOutProductLocator);
-    await this.wrapper.click(soldOutProductLocator);
+    await this.assert.assertElementVisible(this.Elements.soldOutProduct);
+    await this.wrapper.click(this.Elements.soldOutProduct);
     await this.page.waitForLoadState("domcontentloaded");
   }
 

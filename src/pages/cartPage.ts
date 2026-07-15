@@ -21,10 +21,9 @@ export default class CartPage {
     };
 
     async addProductToCart() {
-        const addBtnLocator = this.Elements.addBtnLocator;
-        await this.assert.assertElementVisible(addBtnLocator);
+        await this.assert.assertElementVisible(this.Elements.addBtnLocator);
         const responsePromise = this.page.waitForResponse(response => response.url().includes('/cart/add') && response.status() === 200, { timeout: 10000 }).catch(() => null);
-        await this.wrapper.click(addBtnLocator);
+        await this.wrapper.click(this.Elements.addBtnLocator);
         await responsePromise;
         await this.page.waitForTimeout(1000);
     }
@@ -35,37 +34,34 @@ export default class CartPage {
     }
 
     async updateQuantity(quantity: string) {
-        const qtyInput = this.page.locator(this.Elements.qtyInput).first();
-        await expect(qtyInput).toBeVisible();
-        await qtyInput.fill(quantity);
-        await qtyInput.press('Enter');
+        await expect(this.page.locator(this.Elements.qtyInput).first()).toBeVisible({ timeout: 10000 });
+        await this.page.locator(this.Elements.qtyInput).first().fill('');
+        await this.page.locator(this.Elements.qtyInput).first().type(quantity);
+        await this.page.locator(this.Elements.qtyInput).first().press('Enter');
         await this.page.waitForLoadState('domcontentloaded');
         await this.page.waitForTimeout(1000); // Allow for UI update
     }
 
-    async verifyQuantityUpdated(quantity: string) {
-        const qtyInput = this.page.locator(this.Elements.qtyInput).first();
-        await expect(qtyInput).toHaveValue(quantity);
-        const totalPrice = this.page.locator(this.Elements.totalPrice);
-        if (await totalPrice.count() > 0) {
-            await expect(totalPrice.first()).toBeVisible();
+    async verifyQuantityUpdated(expectedQuantity: string) {
+        await expect(this.page.locator(this.Elements.qtyInput).first()).toHaveValue(expectedQuantity, { timeout: 10000 });
+        if (await this.page.locator(this.Elements.totalPrice).count() > 0) {
+            const priceText = await this.page.locator(this.Elements.totalPrice).first().innerText();
+            expect(priceText.length).toBeGreaterThan(0);
         }
     }
 
     async removeFirstItem() {
-        const removeLink = this.page.locator(this.Elements.removeLink).first();
-        await expect(removeLink).toBeVisible();
-        await removeLink.click();
+        await expect(this.page.locator(this.Elements.removeLink).first()).toBeVisible();
+        await this.page.locator(this.Elements.removeLink).first().click();
         await this.page.waitForLoadState('domcontentloaded');
     }
 
     async verifyCartEmpty() {
-        const emptyMsg = this.page.locator(this.Elements.emptyMsg);
-        await expect(emptyMsg.first()).toBeVisible({ timeout: 10000 });
+        await expect(this.page.locator(this.Elements.emptyMsg)).toBeVisible({ timeout: 10000 });
     }
 
     async verifyItemInCart() {
-        const cartItems = this.page.locator(this.Elements.cartItems);
-        expect(await cartItems.count()).toBeGreaterThan(0);
+        const count = await this.page.locator(this.Elements.cartItems).count();
+        expect(count).toBeGreaterThan(0);
     }
 }
