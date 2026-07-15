@@ -1,8 +1,11 @@
 import { LaunchOptions, chromium, firefox, webkit } from "@playwright/test";
 
 const options: LaunchOptions = {
-    headless: false,            // must be false to see window
-    args: ["--start-maximized"] // maximizes the OS window
+    headless: false,
+    args: [
+        "--start-maximized",
+        "--disable-blink-features=AutomationControlled" // helps bypass basic bot detection
+    ]
 };
 export const invokeBrowser = () => {
     const browserType = process.env.npm_config_BROWSER || "chrome";

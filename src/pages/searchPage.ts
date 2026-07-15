@@ -13,8 +13,8 @@ export default class SearchPage {
 
     private Elements = {
         searchInput: 'input[name="q"]',
-        searchButton: 'button[type="submit"]',
-        productItems: '.grid__item',
+        searchButton: '#search-submit',
+        productItems: 'a[href*="/products/"] img',
         noResultsMessage: 'text=/no results/i',
         errorTitle: 'text=/Application error|500 Internal Server Error/i'
     };

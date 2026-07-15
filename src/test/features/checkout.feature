@@ -1,3 +1,4 @@
+@smoke1
 @checkout
 Feature: Checkout Flow Functionality
   As a customer

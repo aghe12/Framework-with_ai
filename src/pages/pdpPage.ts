@@ -18,7 +18,7 @@ export default class PdpPage {
     image: 'img',
     productForm: 'form[action*="/cart/add"]',
     soldOutProduct: 'a:has(.sold-out)',
-    addToCartBtn: 'button:has-text("Sold Out")'
+    addToCartBtn: '#add[disabled]'
   };
 
   async navigateToCatalog() {

@@ -12,7 +12,7 @@ export default class CheckoutPage {
     }
 
     private Elements = {
-        addBtnLocator: 'form[action*="/cart/add"] button[type="submit"]',
+        addBtnLocator: '#add',
         checkoutBtnLocator: 'button[name="checkout"]',
         emailInput: '#checkout_email',
         firstNameInput: '#checkout_shipping_address_first_name',
@@ -38,8 +38,10 @@ export default class CheckoutPage {
 
     async addProductToCartAndCheckout() {
         await this.assert.assertElementVisible(this.Elements.addBtnLocator);
-        
-        const responsePromise = this.page.waitForResponse(response => response.url().includes('/cart/add') && response.status() === 200, { timeout: 10000 }).catch(() => null);
+        const responsePromise = this.page.waitForResponse(response => 
+            response.url().includes('/cart/add') && response.status() === 200, 
+            { timeout: 8000 }
+        );
         await this.wrapper.click(this.Elements.addBtnLocator);
         await responsePromise;
         

@@ -12,20 +12,42 @@ export default class CartPage {
     }
 
     private Elements = {
-        addBtnLocator: 'form[action*="/cart/add"] button[type="submit"]',
-        qtyInput: 'input[name="updates[]"]',
-        totalPrice: '.cart-total',
-        removeLink: 'a:has-text("Remove")',
+        addBtnLocator: '#add',
+        qtyInput: 'input[name="updates[]"]:visible',
+        totalPrice: '.cart-total:visible',
+        removeLink: 'a.removeLine:visible',
         emptyMsg: 'text="Your cart is currently empty"',
-        cartItems: '.cart-item'
+        cartItems: '.cart-item:visible',
+        captcha: '.g-recaptcha, iframe[src*="hcaptcha"]'
     };
 
+    private async handleCaptcha(error: any, message: string) {
+        const url = this.page.url();
+        const captcha = this.page.locator(this.Elements.captcha);
+
+        if (url.includes("/challenge") || (await captcha.count()) > 0) {
+            throw new Error(`⚠️ CAPTCHA/BOT DETECTION triggered. ${message}`);
+        }
+
+        throw error;
+    }
+
     async addProductToCart() {
-        await this.assert.assertElementVisible(this.Elements.addBtnLocator);
-        const responsePromise = this.page.waitForResponse(response => response.url().includes('/cart/add') && response.status() === 200, { timeout: 10000 }).catch(() => null);
-        await this.wrapper.click(this.Elements.addBtnLocator);
-        await responsePromise;
-        await this.page.waitForTimeout(1000);
+        try {
+            await this.assert.assertElementVisible(this.Elements.addBtnLocator);
+            
+            // Wait for the AJAX cart add request to complete successfully
+            const responsePromise = this.page.waitForResponse(response => 
+                response.url().includes('/cart/add') && response.status() === 200, 
+                { timeout: 8000 }
+            );
+            
+            await this.wrapper.click(this.Elements.addBtnLocator);
+            await responsePromise;
+            await this.page.waitForTimeout(1000);
+        } catch (error) {
+            await this.handleCaptcha(error, "Cannot add product to cart without solving Captcha.");
+        }
     }
 
     async navigateToCart() {
